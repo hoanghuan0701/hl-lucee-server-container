@@ -1,0 +1,43 @@
+#
+# This file is managed by ansible, don't make changes here - they will be overwritten.
+#  but only the vhost.template and vhost.inc.template file
+#
+
+#
+# TEMPLATE vhost definition
+# overwrites
+#   - ServerName
+#   - DocumentRoot
+#   - logfile
+#   - ssl certificate
+
+
+<VirtualHost *:80>
+    Include conf.d/vhost.d/TEMPLATE.inc
+
+    # vhost specific log config
+    ErrorLog logs/TEMPLATE-error_log
+    CustomLog logs/TEMPLATE-access_log combined
+
+</VirtualHost>
+
+
+<VirtualHost *:443>
+    Include conf.d/vhost.d/TEMPLATE.inc
+
+    # default SSL config
+    Include conf.d/ssl-strong.conf.inc
+
+    # vhost specific SSL config
+    SSLCertificateFile /etc/pki/tls/certs/TEMPLATE.crt
+    SSLCertificateKeyFile /etc/pki/tls/private/TEMPLATE.key
+    #SSLCertificateChainFile /etc/pki/tls/certs/intermediate.crt
+    #SSLCertificateFile /etc/letsencrypt/live/TEMPLATE/fullchain.pem
+    #SSLCertificateKeyFile /etc/letsencrypt/live/TEMPLATE/privkey.pem
+
+    # vhost specific log config
+    ErrorLog logs/TEMPLATE_ssl_error_log
+    TransferLog logs/TEMPLATE_ssl_access_log
+    CustomLog logs/TEMPLATE_ssl_request_log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
+</VirtualHost>

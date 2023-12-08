@@ -1,0 +1,67 @@
+
+
+services:
+
+  cmsserver:
+    build:
+      context: ./config/lucee-cms/
+      args:
+        LUCEE_ADMIN_PASSWORD: contens
+      dockerfile: lucee-cms.Dockerfile
+    container_name: coldfusion_app
+    hostname: cfadmin.dev
+    volumes:
+      - ../../html:/var/www.cms.goethe.de/html
+      - shared_configs:/opt/coldfusion/config/wsconfig/
+      - shared_www:/opt/coldfusion/cfusion/wwwroot/
+      - ./lib/:/usr/local/tomcat/contenslib/
+    ports:
+      - '8888:8888'
+    depends_on:
+      - cmsweb
+      - redis
+    networks:
+      apachecf:
+        ipv4_address: 10.6.0.5
+
+  cmsweb:
+    build:
+      context: ./config/apache-cms/
+      dockerfile: apache-cms.Dockerfile
+    container_name: http-proxy
+    hostname: cmsdev.goethe.de
+    volumes:
+      - shared_configs:/opt/coldfusion/config/wsconfig/
+      - shared_www:/opt/coldfusion/cfusion/wwwroot/
+      - ./logs:/var/log/apache2
+      - ../../html:/var/www.cms.goethe.de/html
+    ports:
+      - '80:80'
+      - '443:443'
+    networks:
+      apachecf:
+        ipv4_address: 10.6.0.6
+
+  redis:
+    image: redis:6.0
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - ./cache:/usr/share/redis/data/
+    networks:
+      apachecf:
+        ipv4_address: 10.6.0.7
+
+volumes:
+  shared_configs:
+  shared_www:
+
+networks:
+  apachecf:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.6.0.0/16
+          gateway: 10.6.0.1

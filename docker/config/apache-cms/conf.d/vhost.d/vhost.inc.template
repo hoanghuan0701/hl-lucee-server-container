@@ -1,0 +1,26 @@
+#
+# This file is managed by ansible, don't make changes here - they will be overwritten.
+#  but only the vhost.template and vhost.inc.template file
+#
+
+#
+# TEMPLATE vhost definition common includes
+# shared by 80/443 virtual host definitions
+# e.g.
+# overwrites
+#   - ServerName
+#   - DocumentRoot
+#   - Directory setting
+
+
+# Note: we are inside VirtualHost definition!
+
+    ServerName TEMPLATE
+    #ServerAlias TEMPLATE
+
+    DocumentRoot /var/www.TEMPLATE/html
+
+    <Directory /var/www.TEMPLATE/html>
+        AllowOverride none
+        Require all granted
+    </Directory>
